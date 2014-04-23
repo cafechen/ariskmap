@@ -1,0 +1,65 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hwhl.rm"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="15" />
+
+    <application
+        android:name="com.hwhl.rm.util.WSApplication"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activity.Welcome"
+           android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.FileListActivity"
+           	android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".activity.MapListActivity"
+         		android:screenOrientation="landscape"
+            android:label="@string/title_activity_main" />
+        <activity
+            android:name=".activity.MapActivity"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar" />
+        <activity
+            android:name=".activity.SelectTypeActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/DialogStyle" />
+   			<activity
+            android:name=".activity.RiskListActivity"
+     				android:screenOrientation="landscape" />
+				<activity
+            android:name=".activity.RiskCostActivity"
+            android:windowSoftInputMode="stateHidden" 
+            android:screenOrientation="landscape" />
+      	<activity
+            android:name=".activity.RiskFilterActivity"
+            android:windowSoftInputMode="stateHidden" 
+            android:screenOrientation="landscape" />
+    		<activity
+            android:name=".activity.RiskHotActivity"
+            android:screenOrientation="landscape" />
+    		<activity
+            android:name=".activity.RiskOrderActivity"
+            android:screenOrientation="landscape" />
+       	<activity
+            android:name=".activity.RiskStatisticsActivity"
+            android:screenOrientation="landscape" />
+      	<activity
+            android:name=".activity.ImageActivity"
+            android:screenOrientation="landscape" />
+    </application>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+</manifest>

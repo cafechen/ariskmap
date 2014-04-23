@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <!--
+          <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    -->
+
+    <View
+        android:id="@+id/top_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@color/dz_bord"
+  />
+    <!-- </LinearLayout> -->
+
+    <LinearLayout
+        android:id="@+id/linearCenter"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="@color/dz_bord" />
+
+        <TextView
+            android:id="@+id/txt1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/risk_list_item_tv_mc"
+            android:textColor="@color/dz_font" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="@color/dz_bord" />
+
+        <TextView
+            android:id="@+id/txt2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/risk_list_item_tv_bh"
+            android:textColor="@color/dz_font" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="@color/dz_bord" />
+
+        <TextView
+            android:id="@+id/txt3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/risk_list_item_tv_lb"
+            android:textColor="@color/dz_font" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="@color/dz_bord" />
+
+        <TextView
+            android:id="@+id/txt4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/risk_list_item_tv_lx"
+            android:textColor="@color/dz_font" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:background="@color/dz_bord" />
+    </LinearLayout>
+    <!--
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+    -->
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@color/dz_bord" />
+    <!-- </LinearLayout> -->
+
+</LinearLayout>
