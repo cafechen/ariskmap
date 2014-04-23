@@ -244,7 +244,14 @@ public class MapDataParser {
 					else
 						map.setCardPic(data);
 					lastTag = tag;
-				}
+				} else if ("Belonglayers".equals(tag)) {
+                    if (lastTag.equals(tag))
+                        map.setBelongLayers(StrUtil.nullToStr(map.getBelongLayers())
+                                + data);
+                    else
+                        map.setBelongLayers(data);
+                    lastTag = tag;
+                }
 
 			}
 		}

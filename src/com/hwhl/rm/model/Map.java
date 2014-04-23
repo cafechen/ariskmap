@@ -36,6 +36,7 @@ public class Map {
 	private String isDel;
 	private String linkPics;
 	private String cardPic;
+    private String belongLayers;
 
 	public String getId() {
 		return id;
@@ -269,4 +270,10 @@ public class Map {
 		this.toWho = toWho;
 	}
 
+    public String getBelongLayers() {
+        return belongLayers;
+    }
+    public void setBelongLayers(String belongLayers) {
+        this.belongLayers = belongLayers;
+    }
 }

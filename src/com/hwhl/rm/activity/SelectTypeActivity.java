@@ -11,6 +11,7 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -223,7 +224,7 @@ public class SelectTypeActivity extends Activity {
             ((TextView) findViewById(R.id.dialog_title))
                     .setText(R.string.select_type_tclb);
             cursor = db.rawQuery(
-                    "select id, title from dictype where typeStr='风险' and fatherid=0",
+                    "select id, layerName from projectMapPageLayer where visible=1",
                     null);
             if (cursor != null) {
                 cursor.moveToFirst();
@@ -232,7 +233,8 @@ public class SelectTypeActivity extends Activity {
                     map.put("id", StrUtil.nullToStr(cursor.getString(cursor
                             .getColumnIndex("id"))));
                     map.put("title", StrUtil.nullToStr(cursor
-                            .getString(cursor.getColumnIndex("title"))));
+                            .getString(cursor.getColumnIndex("layerName"))));
+                    Log.d("####LAYER:", cursor.getString(cursor.getColumnIndex("layerName")));
                     list.add(map);
                     cursor.moveToNext();
                 }

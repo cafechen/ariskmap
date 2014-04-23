@@ -32,6 +32,7 @@ import com.hwhl.rm.R;
 import com.hwhl.rm.adapter.ProjectListAdapter;
 import com.hwhl.rm.model.DicType;
 import com.hwhl.rm.model.Directory;
+import com.hwhl.rm.model.Layer;
 import com.hwhl.rm.model.Map;
 import com.hwhl.rm.model.Project;
 import com.hwhl.rm.model.ProjectMatrix;
@@ -48,6 +49,7 @@ import com.hwhl.rm.util.StrUtil;
 import com.hwhl.rm.util.WSApplication;
 import com.hwhl.rm.xml.DicTypeDataParser;
 import com.hwhl.rm.xml.DirectoryDataParser;
+import com.hwhl.rm.xml.LayerDataParser;
 import com.hwhl.rm.xml.MapDataParser;
 import com.hwhl.rm.xml.ProjectDataParser;
 import com.hwhl.rm.xml.ProjectMatrixDataParser;
@@ -220,6 +222,7 @@ public class MapListActivity extends Activity {
 		db.execSQL("delete from risk");
 		db.execSQL("delete from riskCost");
 		db.execSQL("delete from riskScore");
+        db.execSQL("delete from projectMapPageLayer");
 		db.setTransactionSuccessful();
 		db.endTransaction();
 		InputStream is = null;
@@ -268,7 +271,7 @@ public class MapListActivity extends Activity {
 			for (Map item : mapList) {
 				db.execSQL(
 						"insert into projectMap(id , projectId , objectId , title ,positionX , positionY ,width , height ,isline , picPng ,picEmz ,belongPage , Obj_maptype , Obj_belongwho , Obj_remark , Obj_db_id , Obj_riskTypeStr , Obj_other1 ,"
-								+ " Obj_other2 ,Obj_data1 ,Obj_data2 ,Obj_data3 ,lineType ,lineType2 ,isDel ,linkPics ,cardPic ,fromWho ,toWho )values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+								+ " Obj_other2 ,Obj_data1 ,Obj_data2 ,Obj_data3 ,lineType ,lineType2 ,isDel ,linkPics ,cardPic ,fromWho ,toWho , belongLayers)values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 						new String[] { StrUtil.nullToStr(item.getId()),
 								StrUtil.nullToStr(item.getProjectId()),
 								StrUtil.nullToStr(item.getObjectId()),
@@ -297,7 +300,8 @@ public class MapListActivity extends Activity {
 								StrUtil.nullToStr(item.getLinkPics()),
 								StrUtil.nullToStr(item.getCardPic()),
 								StrUtil.nullToStr(item.getFromWho()),
-								StrUtil.nullToStr(item.getToWho()) });
+								StrUtil.nullToStr(item.getToWho()),
+                                StrUtil.nullToStr(item.getBelongLayers())});
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
@@ -465,6 +469,23 @@ public class MapListActivity extends Activity {
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
+
+            is = new FileInputStream(dir + "project/T_project_MapPage_layer.xml");
+            List<Layer> layerList = new LayerDataParser().getItems(is);
+            db.beginTransaction();
+            for (Layer item : layerList) {
+                db.execSQL(
+                        "insert into projectMapPageLayer(id, layerName , visible , projectId ,pageIndex , belongPage)values(?,?,?,?,?,?)",
+                        new String[] { StrUtil.nullToStr(item.getId()),
+                                StrUtil.nullToStr(item.getLayerName()),
+                                StrUtil.nullToStr(item.getVisible()),
+                                StrUtil.nullToStr(item.getProjectId()),
+                                StrUtil.nullToStr(item.getPageIndex()),
+                                StrUtil.nullToStr(item.getBelongPage()) });
+            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
+
 			db.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
