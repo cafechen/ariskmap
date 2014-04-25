@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -222,6 +223,7 @@ public class MapListActivity extends Activity {
 		db.execSQL("delete from risk");
 		db.execSQL("delete from riskCost");
 		db.execSQL("delete from riskScore");
+        db.execSQL("delete from riskScoreFather");
         db.execSQL("delete from projectMapPageLayer");
 		db.setTransactionSuccessful();
 		db.endTransaction();
@@ -265,6 +267,7 @@ public class MapListActivity extends Activity {
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
+
 			is = new FileInputStream(dir + "project/projectMap.xml");
 			List<Map> mapList = new MapDataParser().getMaps(is);
 			db.beginTransaction();
@@ -305,6 +308,7 @@ public class MapListActivity extends Activity {
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
+
 			is = new FileInputStream(dir + "project/projectMatrix.xml");
 			List<ProjectMatrix> projectMatrixList = new ProjectMatrixDataParser()
 					.getItems(is);
@@ -439,7 +443,7 @@ public class MapListActivity extends Activity {
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
-			
+
 			is = new FileInputStream(dir + "project/T_project_risk_Relation.xml");
 			List<RiskRelation> riskRelationList = new RiskRelationDataParser().getItems(is);
 			db.beginTransaction();
@@ -454,13 +458,13 @@ public class MapListActivity extends Activity {
 			}
 			db.setTransactionSuccessful();
 			db.endTransaction();
-			
+
 			is = new FileInputStream(dir + "project/risk_score_father.xml");
 			List<RiskScoreFather> riskScoreFatherList = new RiskScoreFatherDataParser().getItems(is);
 			db.beginTransaction();
 			for (RiskScoreFather item : riskScoreFatherList) {
 				db.execSQL(
-						"insert into riskScoreFather(id ,riskId ,before ,Send ,projectId)values(?,?,?,?,?)",
+						"insert into riskScoreFather(id ,riskId ,before ,send ,projectId)values(?,?,?,?,?)",
 						new String[] { StrUtil.nullToStr(item.getId()),
 								StrUtil.nullToStr(item.getRiskId()),
 								StrUtil.nullToStr(item.getBefore()),

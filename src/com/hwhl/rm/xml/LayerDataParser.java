@@ -1,5 +1,7 @@
 package com.hwhl.rm.xml;
 
+import android.util.Log;
+
 import com.hwhl.rm.model.Layer;
 import com.hwhl.rm.model.RiskRelation;
 import com.hwhl.rm.util.StrUtil;
@@ -47,6 +49,7 @@ public class LayerDataParser {
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
+            Log.d("####LAYER", localName);
 			if ("Risk".equals(localName)) {
 				item = new Layer();
 				// project.setId(new Integer(attributes.getValue(0)));

@@ -150,7 +150,11 @@ public class RiskStatisticsActivity extends Activity {
 			tv.setText("" + unitDistance * i);
 			absoluteLayout.addView(tv);
 		}
-		int itemWidth = tableWidth / riskTypeList.size();
+
+        int itemWidth = tableWidth ;
+        if( riskTypeList.size() != 0){
+            itemWidth = tableWidth / riskTypeList.size();
+        }
 
 		for (int i = 0; i < riskTypeList.size(); i++) {
 			// 标题

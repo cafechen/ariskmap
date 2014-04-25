@@ -44,5 +44,14 @@ public class RiskScoreFather {
 		this.projectId = projectId;
 	}
 
-
+    @Override
+    public String toString() {
+        return "RiskScoreFather{" +
+                "id='" + id + '\'' +
+                ", riskId='" + riskId + '\'' +
+                ", before='" + before + '\'' +
+                ", send='" + send + '\'' +
+                ", projectId='" + projectId + '\'' +
+                '}';
+    }
 }

@@ -234,7 +234,6 @@ public class SelectTypeActivity extends Activity {
                             .getColumnIndex("id"))));
                     map.put("title", StrUtil.nullToStr(cursor
                             .getString(cursor.getColumnIndex("layerName"))));
-                    Log.d("####LAYER:", cursor.getString(cursor.getColumnIndex("layerName")));
                     list.add(map);
                     cursor.moveToNext();
                 }
