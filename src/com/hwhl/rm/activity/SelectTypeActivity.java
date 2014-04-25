@@ -211,7 +211,7 @@ public class SelectTypeActivity extends Activity {
 				String fileName = u.substring(0, u.indexOf("."));
 				button.setText(StrUtil.decode(fileName));	
 			}
-		}else if (type == 9) { // 选择图层
+		}/*else if (type == 9) { // 选择图层
             if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
@@ -256,7 +256,7 @@ public class SelectTypeActivity extends Activity {
                     SelectTypeActivity.this.finish();
                 }
             });
-        }
+        }*/
 	}
 
 	@Override

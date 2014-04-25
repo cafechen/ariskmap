@@ -49,7 +49,6 @@ public class LayerDataParser {
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attributes) throws SAXException {
-            Log.d("####LAYER", localName);
 			if ("Risk".equals(localName)) {
 				item = new Layer();
 				// project.setId(new Integer(attributes.getValue(0)));

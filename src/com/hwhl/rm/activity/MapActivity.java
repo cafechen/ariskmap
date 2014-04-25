@@ -1,13 +1,17 @@
 package com.hwhl.rm.activity;
 
+import java.lang.reflect.GenericArrayType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,6 +36,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.hwhl.rm.R;
 import com.hwhl.rm.model.Map;
@@ -96,6 +101,15 @@ public class MapActivity extends Activity implements OnTouchListener {
 	// 风险路径存储
 	private List<View> riskPathList;
 	// 地图标签是否可点击
+
+    private HashMap<String, Boolean> layerMap;
+
+    private String[] layerTitles ;
+
+    private boolean[] layerValues ;
+
+    // 地图标签是否可点击
+
 	private boolean enableBtn = true;
 	private float mapWidth = 0f;
 	private float mapHeight = 0f;
@@ -136,6 +150,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 		mapList = new ArrayList<Map>();
 		riskRelationList = new ArrayList<RiskRelation>();
 		// 解析数据
+        loadLayers();
 		loadData();
 		initData();
 
@@ -144,12 +159,37 @@ public class MapActivity extends Activity implements OnTouchListener {
 		effectViewList = new ArrayList<View>();
 		starViewList = new ArrayList<View>();
 		riskPathList = new ArrayList<View>();
+
 		// 依次划线
 		drawView();
 		// 给布局添加触摸事件
 		absoluteLayout.setOnTouchListener(this);
 		super.onCreate(savedInstanceState);
 	}
+
+    protected void repaintView() {
+        for (View view : viewList) {
+            Map map = (Map) view.getTag();
+            for(int i = 0; i < layerTitles.length; i++){
+                if(layerValues[i] && map.getBelongLayers().indexOf(layerTitles[i]) >=0){
+                    if(osVersion<11)
+                    {
+                        AlphaAnimation alpha = new AlphaAnimation(1.0F, 1.0F);
+                        alpha.setDuration(0); // Make animation instant
+                        alpha.setFillAfter(true); // Tell it to persist after the animation ends
+                        view.startAnimation(alpha);
+                    }else{
+                        view.setAlpha(1f);
+                    }
+                    view.setEnabled(true);
+                    break ;
+                }else{
+                    view.setAlpha(0f);
+                    view.setEnabled(false);
+                }
+            }
+        }
+    }
 
 	/**
 	 * 视图平移
@@ -246,20 +286,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 				absoluteLayout.removeView(riskRelationView);
 				showRiskRelation = false;
 			}
-			for (View view : viewList) {
-				//if (!isMapExistForRiskPath(view)) {
-                if(osVersion<11)
-                {
-                    AlphaAnimation alpha = new AlphaAnimation(1.0F, 1.0F);
-                    alpha.setDuration(0); // Make animation instant
-                    alpha.setFillAfter(true); // Tell it to persist after the animation ends
-                    view.startAnimation(alpha);
-                }else{
-                    view.setAlpha(1f);
-                }
-				//}
-			}
-			
+			repaintView();
 		}
 	}
 
@@ -346,7 +373,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 				showRiskRelation = true;
 				enableBtn = false;
 				left_btn.setText(R.string.map_tv_fhdt);
-				
+
 				for (View view : viewList) {
 					//if (!isMapExistForRiskPath(view)) {
                     if(osVersion < 11){
@@ -359,10 +386,31 @@ public class MapActivity extends Activity implements OnTouchListener {
                     }
 					//}
 				}
-				
+
 				// 显示相关性
 				showRiskRelation();
 				break;
+            case 8:
+                new AlertDialog.Builder(this).setTitle("选择图层")
+                .setIcon(R.drawable.ic_launcher)
+                .setMultiChoiceItems(layerTitles, layerValues, new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        layerValues[which] = isChecked ;
+                        repaintView();
+                    }
+                }).setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        repaintView();
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Auto-generated method stub
+                    }
+                }).create().show();
+                break;
 			default:
 				break;
 			}
@@ -443,8 +491,6 @@ public class MapActivity extends Activity implements OnTouchListener {
 		} else if (requestCode == 4) {
             //选择图层
             if (resultCode == 1) {
-                Log.d("####LAYER:", data.getStringExtra("id")) ;
-                Log.d("####LAYER:", data.getStringExtra("title")) ;
             }
         }
 		super.onActivityResult(requestCode, resultCode, data);
@@ -455,7 +501,42 @@ public class MapActivity extends Activity implements OnTouchListener {
 	 * 
 	 * @return
 	 */
+
+    private void loadLayers(){
+        //风险图层
+        layerMap = new HashMap<String, Boolean>();
+        SQLiteDatabase db = manages.db();
+        Cursor cursor = null;
+        cursor = db.rawQuery(
+                "select id, layerName from projectMapPageLayer where visible=1",
+                null);
+        if (cursor != null) {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                layerMap.put(StrUtil.nullToStr(cursor
+                        .getString(cursor.getColumnIndex("layerName"))), true);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        db.close();
+
+        layerTitles = new String[layerMap.size()];
+        layerValues = new boolean[layerMap.size()];
+        Iterator iter = layerMap.entrySet().iterator();
+        int i = 0 ;
+        while (iter.hasNext()) {
+            java.util.Map.Entry<String, Boolean> entry = (java.util.Map.Entry) iter.next();
+            String title = entry.getKey();
+            Boolean value = entry.getValue();
+            layerTitles[i] = title ;
+            layerValues[i] = true;
+            i++ ;
+        }
+    }
+
 	private void loadData() {
+        mapList.clear();
 		SQLiteDatabase db = manages.db();
 		Cursor cursor = db.rawQuery(
 				"select * from projectMap where projectId =? and Obj_maptype <> '相关性' ",
@@ -523,7 +604,9 @@ public class MapActivity extends Activity implements OnTouchListener {
 						.getColumnIndex("linkPics"))));
 				map.setCardPic(StrUtil.nullToStr(cursor.getString(cursor
 						.getColumnIndex("cardPic"))));
-				mapList.add(map);
+                map.setBelongLayers(StrUtil.nullToStr(cursor.getString(cursor
+                        .getColumnIndex("belongLayers"))));
+                mapList.add(map);
 				cursor.moveToNext();
 			}
 			cursor.close();
@@ -555,8 +638,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 		{
 			isRiskRelation = true;
 		}
-		
-		
+
 	}
 
 	/**
@@ -597,6 +679,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 		for (Map map : mapList) {
 			if (StrUtil.nullToStr(map.getCardPic()).equals("")
 					&& !StrUtil.nullToStr(map.getIsline()).equals("1")) {
+                Log.d("#### LAYER 画影响", map.getTitle());
 				int positionX = handlerNumber((float) ((StrUtil
 						.nullToDouble(map.getPositionX()) - minPositionX) * rate));
 				int positionY = handlerNumber((float) ((StrUtil
@@ -873,6 +956,21 @@ public class MapActivity extends Activity implements OnTouchListener {
 	}
 
 	private void showRiskPath(Map m) {
+
+        for (View view : viewList) {
+            Map map = (Map) view.getTag();
+            if(map.getBelongLayers().indexOf("风险地图") >= 0){
+                if(osVersion < 11){
+                    AlphaAnimation alpha = new AlphaAnimation(1.0F, 1.0F);
+                    alpha.setDuration(0); // Make animation instant
+                    alpha.setFillAfter(true); // Tell it to persist after the animation ends
+                    view.startAnimation(alpha);
+                }else{
+                    view.setAlpha(1.0f);
+                }
+            }
+        }
+
 		for (View view : lineViewList) {
 			Map map = (Map) view.getTag();
 			if (StrUtil.nullToStr(map.getFromWho()).equals(m.getObjectId())) {
@@ -887,13 +985,25 @@ public class MapActivity extends Activity implements OnTouchListener {
 
 		for (View view : viewList) {
 			if (!isMapExistForRiskPath(view)) {
-                if(osVersion < 11){
-                    AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
-                    alpha.setDuration(0); // Make animation instant
-                    alpha.setFillAfter(true); // Tell it to persist after the animation ends
-                    view.startAnimation(alpha);
+                Map map = (Map) view.getTag();
+                if(map.getBelongLayers().indexOf("风险地图") < 0){
+                    if(osVersion < 11){
+                        AlphaAnimation alpha = new AlphaAnimation(0.0F, 0.0F);
+                        alpha.setDuration(0); // Make animation instant
+                        alpha.setFillAfter(true); // Tell it to persist after the animation ends
+                        view.startAnimation(alpha);
+                    }else{
+                        view.setAlpha(0.0f);
+                    }
                 }else{
-                    view.setAlpha(0.4f);
+                    if(osVersion < 11){
+                        AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
+                        alpha.setDuration(0); // Make animation instant
+                        alpha.setFillAfter(true); // Tell it to persist after the animation ends
+                        view.startAnimation(alpha);
+                    }else{
+                        view.setAlpha(0.4f);
+                    }
                 }
 			}
 		}

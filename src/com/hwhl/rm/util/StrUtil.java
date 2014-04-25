@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 /**
  * 字符串工具类
@@ -176,4 +177,10 @@ public class StrUtil {
 		}
 		return result;
 	}
+
+    public static String[] trans(ArrayList<String> als){
+        String[] sa=new String[als.size()];
+        als.toArray(sa);
+        return sa;
+    }
 }

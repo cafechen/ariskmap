@@ -113,6 +113,19 @@
                 android:text="@string/select_type_btn_xgx"
                 android:textColor="#333"
                 android:textSize="18sp" />
+
+            <Button
+                android:layout_width="200dp"
+                android:layout_height="40dip"
+                android:layout_marginTop="4dip"
+                android:background="@drawable/btn_style_white"
+                android:gravity="center"
+                android:onClick="OnSelectClickListener"
+                android:tag="8"
+                android:text="@string/select_type_btn_xztc"
+                android:textColor="#333"
+                android:textSize="18sp" />
+
         </LinearLayout>
     </ScrollView>
 
