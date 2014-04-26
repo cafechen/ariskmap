@@ -168,6 +168,13 @@ public class MapActivity extends Activity implements OnTouchListener {
 	}
 
     protected void repaintView() {
+        enableBtn = true;
+        left_btn.setText(R.string.map_tv_dtlb);
+        if(showRiskRelation)
+        {
+            absoluteLayout.removeView(riskRelationView);
+            showRiskRelation = false;
+        }
         for (View view : viewList) {
             Map map = (Map) view.getTag();
             for(int i = 0; i < layerTitles.length; i++){
@@ -317,7 +324,7 @@ public class MapActivity extends Activity implements OnTouchListener {
 		if (requestCode == 0) {
 			switch (resultCode) {
 			case 1:
-				if (!enableBtn) {
+				//if (!enableBtn) {
 					left_btn.setText(R.string.map_tv_dtlb);
 					if(showRiskRelation)
 					{
@@ -334,7 +341,7 @@ public class MapActivity extends Activity implements OnTouchListener {
                             view.setAlpha(1f);
                         }
 					}
-				}
+				//}
 				break;
 			case 2:
 				Intent hotListIntent = new Intent(MapActivity.this,
@@ -377,12 +384,12 @@ public class MapActivity extends Activity implements OnTouchListener {
 				for (View view : viewList) {
 					//if (!isMapExistForRiskPath(view)) {
                     if(osVersion < 11){
-                        AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
+                        AlphaAnimation alpha = new AlphaAnimation(0.1f, 0.1f);
                         alpha.setDuration(0); // Make animation instant
                         alpha.setFillAfter(true); // Tell it to persist after the animation ends
                         view.startAnimation(alpha);
                     }else{
-                        view.setAlpha(0.4f);
+                        view.setAlpha(0.1f);
                     }
 					//}
 				}
@@ -420,12 +427,12 @@ public class MapActivity extends Activity implements OnTouchListener {
 				String riskCode = data.getStringExtra("riskCode");
 				for (View view : viewList) {
                     if(osVersion < 11){
-                        AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
+                        AlphaAnimation alpha = new AlphaAnimation(0.1f, 0.1f);
                         alpha.setDuration(0); // Make animation instant
                         alpha.setFillAfter(true); // Tell it to persist after the animation ends
                         view.startAnimation(alpha);
                     }else{
-                        view.setAlpha(0.4f);
+                        view.setAlpha(0.1f);
                     }
 				}
 				for (View view : starViewList) {
@@ -449,12 +456,12 @@ public class MapActivity extends Activity implements OnTouchListener {
 				String id = data.getStringExtra("id");
 				for (View view : viewList) {
                     if(osVersion < 11){
-                        AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
+                        AlphaAnimation alpha = new AlphaAnimation(0.1f, 0.1f);
                         alpha.setDuration(0); // Make animation instant
                         alpha.setFillAfter(true); // Tell it to persist after the animation ends
                         view.startAnimation(alpha);
                     }else{
-                        view.setAlpha(0.4f);
+                        view.setAlpha(0.1f);
                     }
 				}
 				for (View view : effectViewList) {
@@ -957,9 +964,21 @@ public class MapActivity extends Activity implements OnTouchListener {
 
 	private void showRiskPath(Map m) {
 
+        if(m.getBelongLayers().indexOf("风险地图") < 0){
+            enableBtn = true;
+            left_btn.setText(R.string.map_tv_dtlb);
+            if(showRiskRelation)
+            {
+                absoluteLayout.removeView(riskRelationView);
+                showRiskRelation = false;
+            }
+            return ;
+        }
+
         for (View view : viewList) {
             Map map = (Map) view.getTag();
-            if(map.getBelongLayers().indexOf("风险地图") >= 0){
+            if(map.getBelongLayers().indexOf("风险地图") >= 0 || "1".equals(map.getIsline())){
+                /*
                 if(osVersion < 11){
                     AlphaAnimation alpha = new AlphaAnimation(1.0F, 1.0F);
                     alpha.setDuration(0); // Make animation instant
@@ -968,18 +987,44 @@ public class MapActivity extends Activity implements OnTouchListener {
                 }else{
                     view.setAlpha(1.0f);
                 }
+                */
+            }else{
+                view.setAlpha(0.0f);
+                view.setEnabled(false);
             }
         }
 
 		for (View view : lineViewList) {
 			Map map = (Map) view.getTag();
 			if (StrUtil.nullToStr(map.getFromWho()).equals(m.getObjectId())) {
-				riskPathList.add(view);
-				searchFrom(map.getToWho());
+                Boolean isContinue = true ;
+                for (View v : viewList) {
+                    Map mm = (Map) v.getTag();
+                    if(StrUtil.nullToStr(map.getToWho()).equals(mm.getObjectId())){
+                        if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                            isContinue = false ;
+                        }
+                    }
+                }
+                if(isContinue){
+                    riskPathList.add(view);
+                    searchFrom(map.getToWho());
+                }
 			}
 			if (StrUtil.nullToStr(map.getToWho()).equals(m.getObjectId())) {
-				riskPathList.add(view);
-				searchTo(map.getFromWho());
+                Boolean isContinue = true ;
+                for (View v : viewList) {
+                    Map mm = (Map) v.getTag();
+                    if(StrUtil.nullToStr(map.getFromWho()).equals(mm.getObjectId())){
+                        if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                            isContinue = false ;
+                        }
+                    }
+                }
+                if(isContinue){
+				    riskPathList.add(view);
+				    searchTo(map.getFromWho());
+                }
 			}
 		}
 
@@ -997,12 +1042,12 @@ public class MapActivity extends Activity implements OnTouchListener {
                     }
                 }else{
                     if(osVersion < 11){
-                        AlphaAnimation alpha = new AlphaAnimation(0.4F, 0.4F);
+                        AlphaAnimation alpha = new AlphaAnimation(0.1f, 0.1f);
                         alpha.setDuration(0); // Make animation instant
                         alpha.setFillAfter(true); // Tell it to persist after the animation ends
                         view.startAnimation(alpha);
                     }else{
-                        view.setAlpha(0.4f);
+                        view.setAlpha(0.1f);
                     }
                 }
 			}
@@ -1083,7 +1128,26 @@ public class MapActivity extends Activity implements OnTouchListener {
 	private void searchTo(String objectId) {
 		for (View view : effectViewList) {
 			Map map = (Map) view.getTag();
+            if(map.getBelongLayers().indexOf("风险地图") < 0){
+                continue;
+            }
 			if (StrUtil.nullToStr(map.getObjectId()).equals(objectId)) {
+
+                /*
+                Boolean isContinue = true ;
+                for (View v : viewList) {
+                    Map mm = (Map) v.getTag();
+                    if(StrUtil.nullToStr(map.getToWho()).equals(mm.getObjectId())){
+                        if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                            isContinue = false ;
+                        }
+                    }
+                }
+
+                if(!isContinue)
+                    continue;
+                    */
+
 				if (!isMapExistForRiskPath(view)) {
 					riskPathList.add(view);
 					// String lineObjectId = map.getToWho();
@@ -1100,8 +1164,19 @@ public class MapActivity extends Activity implements OnTouchListener {
 						Map mapLine = (Map) viewLine.getTag();
 						if (mapLine.getToWho().equals(objectId)) {
 							if (!isMapExistForRiskPath(viewLine)) {
-								riskPathList.add(viewLine);
-								searchTo(mapLine.getFromWho());
+                                Boolean isContinue = true ;
+                                for (View v : viewList) {
+                                    Map mm = (Map) v.getTag();
+                                    if(StrUtil.nullToStr(mapLine.getFromWho()).equals(mm.getObjectId())){
+                                        if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                                            isContinue = false ;
+                                        }
+                                    }
+                                }
+                                if(isContinue){
+                                    riskPathList.add(viewLine);
+                                    searchTo(mapLine.getFromWho());
+                                }
 							}
 						}
 					}
@@ -1113,7 +1188,26 @@ public class MapActivity extends Activity implements OnTouchListener {
 	private void searchFrom(String objectId) {
 		for (View view : effectViewList) {
 			Map map = (Map) view.getTag();
+            if(map.getBelongLayers().indexOf("风险地图") < 0){
+                continue;
+            }
 			if (StrUtil.nullToStr(map.getObjectId()).equals(objectId)) {
+
+                /*
+                Boolean isContinue = true ;
+                for (View v : viewList) {
+                    Map mm = (Map) v.getTag();
+                    if(StrUtil.nullToStr(map.getToWho()).equals(mm.getObjectId())){
+                        if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                            isContinue = false ;
+                        }
+                    }
+                }
+
+                if(!isContinue)
+                    continue;
+                    */
+
 				if (!isMapExistForRiskPath(view)) {
 					riskPathList.add(view);
 					// 添加影响所属星星
@@ -1127,8 +1221,19 @@ public class MapActivity extends Activity implements OnTouchListener {
 					for (View viewLine : lineViewList) {
 						Map mapLine = (Map) viewLine.getTag();
 						if (mapLine.getFromWho().equals(objectId)) {
-							riskPathList.add(viewLine);
-							searchFrom(mapLine.getToWho());
+                            Boolean isContinue = true ;
+                            for (View v : viewList) {
+                                Map mm = (Map) v.getTag();
+                                if(StrUtil.nullToStr(mapLine.getToWho()).equals(mm.getObjectId())){
+                                    if(mm.getBelongLayers().indexOf("风险地图") < 0){
+                                        isContinue = false ;
+                                    }
+                                }
+                            }
+                            if(isContinue){
+                                riskPathList.add(viewLine);
+                                searchFrom(mapLine.getToWho());
+                            }
 						}
 					}
 				}
